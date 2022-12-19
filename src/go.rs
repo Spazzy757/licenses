@@ -4,10 +4,13 @@ use std::error::Error;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
-type AvailableDependency = String;
 
 // The path to the go file
 const GOMOD: &str = "./go.mod";
+
+type AvailableDependency = String;
+
+type DependencyLicense = (String, String);
 
 pub fn read_dependencies() -> Option<Vec<std::string::String>> {
     if !Path::new(GOMOD).exists() {
@@ -56,9 +59,15 @@ pub fn read_dependencies() -> Option<Vec<std::string::String>> {
     Some(deps)
 }
 
-pub async fn get_licenses(deps: Vec<std::string::String>) -> Result<(), Box<dyn Error>> {
+//get_licenses fteches golang licenses from httpps://pkg.go.dev if none is available
+//then it will set the license type to "unknown"
+pub async fn get_licenses(
+    deps: Vec<std::string::String>,
+) -> Result<Vec<DependencyLicense>, Box<dyn Error>> {
+    let base_url = std::env::var("GO_PKG_OVERRIDE_URL").unwrap_or("https://pkg.go.dev".to_string());
+    let mut deps_licenses: Vec<DependencyLicense> = vec![];
     for l in deps {
-        let pkg_url = format!("https://pkg.go.dev/{}", l);
+        let pkg_url = format!("{}/{}", base_url, l);
         let res = reqwest::get(pkg_url).await?.text().await?;
         let mut license = "unknown".to_string();
         Document::from(res.as_str())
@@ -74,7 +83,10 @@ pub async fn get_licenses(deps: Vec<std::string::String>) -> Result<(), Box<dyn 
                 }
             })
             .for_each(|x| license = x);
-        println!("{} {}", l, license);
+        deps_licenses.push((l, license))
     }
-    Ok(())
+    Ok(deps_licenses)
 }
+
+#[cfg(test)]
+mod tests;

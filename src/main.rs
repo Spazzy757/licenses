@@ -1,6 +1,7 @@
 use clap::Parser;
 use log::{error, warn};
 
+mod config;
 mod go;
 
 #[derive(Parser, Debug)]
@@ -19,13 +20,16 @@ struct Args {
 async fn main() {
     let _args = Args::parse();
 
-    let deps = go::read_dependencies();
-    if deps.is_none() {
-        warn!("no dependencies found, are you in the correct directory?")
-    }
-    let result = go::get_licenses(deps.unwrap()).await;
-    match result {
-        Ok(_) => (),
-        Err(error) => error!("{}", error),
-    }
+    let mut c = config::Config::default();
+    c = c.load_config("./example/config.yaml".to_string());
+    println!("{:#?}", c);
+    //    let deps = go::read_dependencies();
+    //    if deps.is_none() {
+    //        warn!("no dependencies found, are you in the correct directory?")
+    //    }
+    //    let result = go::get_licenses(deps.unwrap()).await;
+    //    match result {
+    //        Ok(_) => (),
+    //        Err(error) => error!("{}", error),
+    //    }
 }
