@@ -59,7 +59,7 @@ pub fn read_dependencies() -> Option<Vec<std::string::String>> {
     Some(deps)
 }
 
-//get_licenses fteches golang licenses from httpps://pkg.go.dev if none is available
+//get_licenses fetches golang licenses from httpps://pkg.go.dev if none is available
 //then it will set the license type to "unknown"
 pub async fn get_licenses(
     deps: Vec<std::string::String>,
