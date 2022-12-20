@@ -35,7 +35,7 @@ pub async fn check_licenses(cfg: super::config::Config) -> Result<Unapproved, Bo
                     }
                 }
                 for l in &cfg.allowed_licenses {
-                    if l.contains(&license.1) {
+                    if license.1.contains(l) {
                         continue 'outer;
                     }
                 }
