@@ -42,7 +42,7 @@ allowed_licenses:
         .with_header("content-type", "text/plain")
         .with_body(yaml_text)
         .create();
-    let mut cfg = Config::default();
+    let cfg = Config::default();
     match cfg
         .load_remote_config(mockito::server_url(), "test".to_string())
         .await

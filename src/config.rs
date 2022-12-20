@@ -7,9 +7,9 @@ use std::error::Error;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
     #[serde(default)]
-    allowed_licenses: Vec<String>,
+    pub allowed_licenses: Vec<String>,
     #[serde(default)]
-    whitelisted_dependencies: Vec<String>,
+    pub whitelisted_dependencies: Vec<String>,
 }
 
 impl Config {

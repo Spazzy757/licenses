@@ -1,3 +1,4 @@
+use log::info;
 use select::document::Document;
 use select::predicate::Name;
 use std::error::Error;
@@ -12,6 +13,9 @@ type AvailableDependency = String;
 
 type DependencyLicense = (String, String);
 
+//read_dependencies reads the dependency file and creates a vector
+//to easier fetch licensing information
+//TODO add version information
 pub fn read_dependencies() -> Option<Vec<std::string::String>> {
     if !Path::new(GOMOD).exists() {
         return None;
@@ -67,6 +71,7 @@ pub async fn get_licenses(
     let base_url = std::env::var("GO_PKG_OVERRIDE_URL").unwrap_or("https://pkg.go.dev".to_string());
     let mut deps_licenses: Vec<DependencyLicense> = vec![];
     for l in deps {
+        info!("checking license for {}", l);
         let pkg_url = format!("{}/{}", base_url, l);
         let res = reqwest::get(pkg_url).await?.text().await?;
         let mut license = "unknown".to_string();
@@ -77,7 +82,7 @@ pub async fn get_licenses(
                 if !n.attr("data-test-id").is_none()
                     && n.attr("data-test-id").unwrap() == "UnitHeader-license"
                 {
-                    Some(n.text())
+                    Some(n.text().replace("-", " "))
                 } else {
                     None
                 }
