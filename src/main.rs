@@ -5,6 +5,7 @@ use std::process;
 
 mod config;
 mod go;
+mod javascript;
 mod license_check;
 
 #[derive(Parser, Debug)]
